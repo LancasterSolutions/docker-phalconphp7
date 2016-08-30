@@ -2,8 +2,17 @@ FROM quantafuture/docker-apachephp7
 
 MAINTAINER Jānis Gruzis <janis.gruzis@kotique.lv>
 
+RUN apt-get update
+RUN apt-get upgrade
+
+# Imagick
+RUN apt-get install -y libmagickwand-dev
+RUN apt-get install -y libmagickcore-dev
+RUN cd /var/www/ && git clone https://github.com/mkoppanen/imagick.git imagick
+RUN cd /var/www/imagick && phpize && ./configure --with-php-config=php-config && make && make install
+RUN echo "extension=imagick.so" > /usr/local/etc/php/conf.d/imagick.ini
+
 # Phalcon
-RUN apt-get install -y php5-dev libpcre3-dev gcc make php5-mysql
 RUN cd /var/www/ && git clone --depth=1 git://github.com/phalcon/cphalcon.git && cd cphalcon/build && ./install
 RUN mkdir -p /usr/local/etc/php/conf.d/
 RUN echo "extension=phalcon.so" > /usr/local/etc/php/conf.d/30-phalcon.ini
